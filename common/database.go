@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"gin_vue_project/model"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -11,12 +12,12 @@ var DB *gorm.DB
 
 func InitDB() *gorm.DB {
 	//driverName := "mysql"
-	host := "localhost"
-	port := "3306"
-	database := "go_project"
-	username := "root"
-	password := "ZZZZZZyxniubi"
-	charset := "utf8"
+	host := viper.GetString("datasource.host")
+	port := viper.GetString("datasource.port")
+	database := viper.GetString("datasource.database")
+	username := viper.GetString("datasource.username")
+	password := viper.GetString("datasource.password")
+	charset := viper.GetString("datasource.charset")
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=true",
 		username,
 		password,

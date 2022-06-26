@@ -1,0 +1,11 @@
+server:
+  port: 8080
+datasource:
+  driverName: mysql
+  host: localhost
+  port: 3306
+  database: go_project
+  username: root
+  password: ZZZZZZyxniubi
+  charset: utf8
+
