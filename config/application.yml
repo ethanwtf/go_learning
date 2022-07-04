@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8001
 datasource:
   driverName: mysql
   host: localhost
@@ -8,4 +8,10 @@ datasource:
   username: root
   password: ZZZZZZyxniubi
   charset: utf8
+oos_datasource:
+  endpoint: localhost:9005
+  accessKeyID: lZ73ESJnIMU6PVwy
+  secretAccessKey: JfCsy432Cn4omoMkyAjd4q3MS1AoS3TI
+  useSSL: false
+  bucketName: first
 

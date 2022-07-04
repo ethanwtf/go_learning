@@ -22,6 +22,7 @@ func InitConfig() {
 func main() {
 	InitConfig()
 	common.InitDB()
+	common.InitOOS()
 
 	r := gin.Default()
 	r = routes.CollectRoute(r)

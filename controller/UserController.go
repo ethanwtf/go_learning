@@ -14,11 +14,11 @@ import (
 
 func Register(c *gin.Context) {
 	db := common.GetDB()
-	name := c.PostForm("name")
-	telephone := c.PostForm("telephone")
-	password := c.PostForm("password")
-	//验证数据
-	//fmt.Println(name, password, telephone)
+	var requestUser = model.User{}
+	c.Bind(&requestUser)
+	name := requestUser.Name
+	telephone := requestUser.Telephone
+	password := requestUser.Password
 
 	if len(telephone) != 11 {
 		response.Response(c, http.StatusUnprocessableEntity, 422, nil, "手机号不正确")
@@ -44,19 +44,28 @@ func Register(c *gin.Context) {
 	}
 
 	newUser := model.User{
-		Name:     name,
-		Phone:    telephone,
-		Password: string(hasedPassword),
+		Name:      name,
+		Telephone: telephone,
+		Password:  string(hasedPassword),
 	}
 	db.Create(&newUser)
-	response.Success(c, nil, "注册成功")
+	//发放token
+	token, err := common.ReleaseToken(newUser)
+	if err != nil {
+		response.Response(c, http.StatusInternalServerError, 500, nil, "系统异常")
+		log.Printf("token generate error : %v", err)
+		return
+	}
+	response.Success(c, gin.H{"token": token}, "注册成功")
 }
 
 func Login(c *gin.Context) {
 	//获取参数
 	db := common.GetDB()
-	telephone := c.PostForm("telephone")
-	password := c.PostForm("password")
+	var requestUser = model.User{}
+	c.Bind(&requestUser)
+	telephone := requestUser.Telephone
+	password := requestUser.Password
 	//数据验证
 	if len(telephone) != 11 {
 		response.Response(c, http.StatusUnprocessableEntity, 422, nil, "手机号不正确")
@@ -67,7 +76,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	var user model.User
-	db.Where("phone = ?", telephone).First(&user)
+	db.Where("Telephone = ?", telephone).First(&user)
 	//判断手机号是否存在
 	if user.ID == 0 {
 		response.Response(c, http.StatusUnprocessableEntity, 422, nil, "用户不存在")
@@ -89,7 +98,7 @@ func Login(c *gin.Context) {
 
 }
 
-func isPhoneExist(db *gorm.DB, phone string) bool {
+func isPhoneExist(db *gorm.DB, Telephone string) bool {
 	var user model.User
 	//result := db.Limit(1).Where("phone = ?", phone).First(&user)
 	//if result.RowsAffected == 0 {
@@ -97,7 +106,7 @@ func isPhoneExist(db *gorm.DB, phone string) bool {
 	//} else {
 	//	return true
 	//}
-	db.Where("phone = ?", phone).First(&user)
+	db.Where("Telephone = ?", Telephone).First(&user)
 	if user.ID == 0 {
 		return false
 	} else {
